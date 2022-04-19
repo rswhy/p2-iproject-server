@@ -70,6 +70,27 @@ class Controller {
     }
   }
 
+  static async UserFood(req, res, next) {
+    try {
+  
+      const { id } = req.user
+  
+      let food = await Food.findAll({
+        order: [["id", "ASC"]],
+        where: {
+          UserId: id
+        }
+      });
+  
+      res.status(200).json({
+        statusCode: 200,
+        data: food,
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+
 
 }
 

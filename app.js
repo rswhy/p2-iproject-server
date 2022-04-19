@@ -23,6 +23,8 @@ app.post("/login", Controller.login );
 
 app.use(authentication);
 
+app.get("/food", Controller.UserFood );
+
 app.use(errorHandler);
 
 app.listen(port, () => {
