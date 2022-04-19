@@ -5,6 +5,29 @@ const {
 } = require("../helpers/hashPassword");
 
 class Controller {
+  static async register(req, res, next) {
+    try {
+      const { email, password, gender, age, weight, location } = req.body;
+
+      let user = await User.create({
+        email, password, gender, age, weight, location 
+      });
+
+      res.status(201).json({
+        statusCode: 201,
+        message: `User with email ${email} created successfully`,
+        data: {
+          email,
+          gender, 
+          age,
+          dailyCalories: user.dailyCalories
+        },
+      });
+    } catch (err) {
+      console.log(err);
+      next(err);
+    }
+  }
 
   static async login(req, res, next) {
     try {

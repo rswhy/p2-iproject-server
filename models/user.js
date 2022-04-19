@@ -84,9 +84,9 @@ module.exports = (sequelize, DataTypes) => {
           instance.password = hash;
 
           if (instance.gender === "male") {
-            instance.dailyCalories = 15.3 * instance.weight + 679;
+            instance.dailyCalories = Math.round(15.3 * instance.weight + 679);
           } else if (instance.gender === "female") {
-            instance.dailyCalories = 14.7 * instance.weight + 496;
+            instance.dailyCalories = Math.round(14.7 * instance.weight + 496);
           }
         },
       },
