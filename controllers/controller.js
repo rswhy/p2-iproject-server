@@ -3,7 +3,6 @@ const {
   createTokenFromPayload,
   comparePasswordHash,
 } = require("../helpers/hashPassword");
-const e = require("express");
 
 class Controller {
   static async register(req, res, next) {
@@ -126,21 +125,67 @@ class Controller {
       let user = await User.findByPk(id);
 
       if (totalCal >= user.dailyCalories) {
-        await User.update({
-          caloriesIntake: totalCal,
-          status: "over",
-        });
+        await User.update(
+          {
+            caloriesIntake: totalCal.toFixed(3),
+            status: "over",
+          },
+          {
+            where: {
+              id,
+            },
+          }
+        );
       } else if (totalCal < user.dailyCalories) {
-        await User.update({
-          caloriesIntake: totalCal,
-          status: "lack"
-        });
-      } 
+        await User.update(
+          {
+            caloriesIntake: totalCal.toFixed(3),
+            status: "lack",
+          },
+          {
+            where: {
+              id,
+            },
+          }
+        );
+      }
 
       res.status(201).json({
         statusCode: 201,
         message: "Food added successfully",
         data: food,
+      });
+    } catch (err) {
+      console.log(err);
+      next(err);
+    }
+  }
+
+  static async deleteFood(req, res, next) {
+    try {
+      const { id } = req.user;
+
+      await Food.destroy({
+        where: {
+          UserId: id,
+        },
+      });
+
+      await User.update(
+        {
+          caloriesIntake: 0,
+          status: "lack",
+        },
+        {
+          where: {
+            id,
+          },
+        }
+      );
+
+      res.status(200).json({
+        statusCode: 200,
+        message: "Daily Food reset successfully",
       });
     } catch (err) {
       next(err);

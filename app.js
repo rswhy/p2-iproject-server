@@ -27,6 +27,8 @@ app.get("/food", Controller.UserFood );
 
 app.post("/food", Controller.addFood );
 
+app.delete("/food", Controller.deleteFood );
+
 app.use(errorHandler);
 
 app.listen(port, () => {
