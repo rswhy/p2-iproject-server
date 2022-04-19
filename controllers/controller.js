@@ -3,6 +3,7 @@ const {
   createTokenFromPayload,
   comparePasswordHash,
 } = require("../helpers/hashPassword");
+const e = require("express");
 
 class Controller {
   static async register(req, res, next) {
@@ -10,7 +11,12 @@ class Controller {
       const { email, password, gender, age, weight, location } = req.body;
 
       let user = await User.create({
-        email, password, gender, age, weight, location 
+        email,
+        password,
+        gender,
+        age,
+        weight,
+        location,
       });
 
       res.status(201).json({
@@ -18,9 +24,9 @@ class Controller {
         message: `User with email ${email} created successfully`,
         data: {
           email,
-          gender, 
+          gender,
           age,
-          dailyCalories: user.dailyCalories
+          dailyCalories: user.dailyCalories,
         },
       });
     } catch (err) {
@@ -35,7 +41,7 @@ class Controller {
 
       const user = await User.findOne({
         where: {
-          email
+          email,
         },
       });
 
@@ -62,7 +68,7 @@ class Controller {
           email: user.email,
           dailyCalories: user.dailyCalories,
           caloriesIntake: user.caloriesIntake,
-          status: user.status
+          status: user.status,
         },
       });
     } catch (err) {
@@ -72,16 +78,15 @@ class Controller {
 
   static async UserFood(req, res, next) {
     try {
-  
-      const { id } = req.user
-  
+      const { id } = req.user;
+
       let food = await Food.findAll({
         order: [["id", "ASC"]],
         where: {
-          UserId: id
-        }
+          UserId: id,
+        },
       });
-  
+
       res.status(200).json({
         statusCode: 200,
         data: food,
@@ -91,7 +96,56 @@ class Controller {
     }
   }
 
+  static async addFood(req, res, next) {
+    try {
+      const { title, seriesNumber, image, calories } = req.body;
+      const { id } = req.user;
 
+      let food = await Food.create({
+        title,
+        seriesNumber,
+        image,
+        calories,
+        UserId: id,
+      });
+
+      let cal = await Food.findAll({
+        where: {
+          UserId: id,
+        },
+      });
+
+      let temp = cal.map((el) => {
+        return +el.calories;
+      });
+
+      let totalCal = temp.reduce(function (a, b) {
+        return a + b;
+      }, 0);
+
+      let user = await User.findByPk(id);
+
+      if (totalCal >= user.dailyCalories) {
+        await User.update({
+          caloriesIntake: totalCal,
+          status: "over",
+        });
+      } else if (totalCal < user.dailyCalories) {
+        await User.update({
+          caloriesIntake: totalCal,
+          status: "lack"
+        });
+      } 
+
+      res.status(201).json({
+        statusCode: 201,
+        message: "Food added successfully",
+        data: food,
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
 }
 
 module.exports = Controller;
