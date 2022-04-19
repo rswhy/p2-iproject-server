@@ -21,7 +21,7 @@ module.exports = {
         allowNull: false,
       },
       calories: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.DECIMAL,
         allowNull: false,
       },
       UserId: {

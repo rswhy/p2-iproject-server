@@ -17,9 +17,9 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use(express.json());
 
-app.use("/register", Controller.register);
+app.post("/register", Controller.register );
 
-app.use("/login", Controller.login);
+app.post("/login", Controller.login );
 
 app.use(authentication);
 

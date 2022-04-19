@@ -26,7 +26,7 @@ module.exports = {
         allowNull: false,
       },
       weight: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.DECIMAL,
         allowNull: false,
       },
       location: {
@@ -34,10 +34,10 @@ module.exports = {
         allowNull: false,
       },
       dailyCalories: {
-        type: Sequelize.INTEGER
+        type: Sequelize.DECIMAL
       },
       caloriesIntake: {
-        type: Sequelize.INTEGER
+        type: Sequelize.DECIMAL
       },
       status: {
         type: Sequelize.STRING

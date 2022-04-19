@@ -1,4 +1,4 @@
-const { User } = require("../models");
+const { User, Food } = require("../models");
 const {
   createTokenFromPayload,
   comparePasswordHash,
@@ -69,6 +69,7 @@ class Controller {
       next(err);
     }
   }
+
 
 }
 
