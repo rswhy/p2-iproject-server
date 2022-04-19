@@ -25,6 +25,8 @@ app.use(authentication);
 
 app.get("/food", Controller.UserFood );
 
+app.post("/food", Controller.addFood );
+
 app.use(errorHandler);
 
 app.listen(port, () => {
