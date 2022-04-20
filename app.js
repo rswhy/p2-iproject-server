@@ -25,6 +25,8 @@ app.post("/contactUs", Controller.sendEmail );
 
 app.use(authentication);
 
+app.patch("/users", Controller.updateMembership );
+
 app.get("/food", Controller.UserFood );
 
 app.post("/food", Controller.addFood );

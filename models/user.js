@@ -75,6 +75,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         defaultValue: "lack",
       },
+      membership: {
+        type: DataTypes.STRING,
+        defaultValue: "regular",
+      },
     },
     {
       sequelize,
