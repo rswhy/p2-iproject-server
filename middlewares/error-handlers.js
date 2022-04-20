@@ -17,11 +17,11 @@ const errorHandler = (err, req, res, next) => {
         message: "Invalid Token, please login first",
       });
       break;
-    case "Post not found" :
+    case "Food not found" :
       res.status(404).json({
         statusCode: 404,
         error: {
-          message: "Post not found" ,
+          message: "Food not found" ,
         },
       });
       break;
@@ -54,14 +54,6 @@ const errorHandler = (err, req, res, next) => {
         statusCode: 403,
         error: {
           message: "You don't have permission to do this action",
-        },
-      });
-      break;
-    case "Forbidden Add":
-      res.status(403).json({
-        statusCode: 403,
-        error: {
-          message: "This post already on your Favorites",
         },
       });
       break;

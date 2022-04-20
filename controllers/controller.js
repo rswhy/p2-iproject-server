@@ -133,6 +133,30 @@ class Controller {
     }
   }
 
+  static async updateMembership(req, res, next) {
+    try {
+      const { id } = req.user;
+
+      let user = await User.update(
+        { membership: "premium" },
+        {
+          where: {
+            UserId: id,
+          },
+        }
+      );
+
+      user = await User.findByPk(id);
+
+      res.status(200).json({
+        statusCode: 200,
+        data: user,
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+
   static async addFood(req, res, next) {
     try {
       const { title, seriesNumber, image, calories } = req.body;
@@ -233,6 +257,12 @@ class Controller {
     try {
       const { id } = req.user;
       const { foodId } = req.params;
+
+      const food = await Food.findByPk(foodId);
+
+      if (!food) {
+        throw { name: "Food not found" };
+      }
 
       await Food.destroy({
         where: {
