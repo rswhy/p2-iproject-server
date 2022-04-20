@@ -3,6 +3,7 @@ const {
   createTokenFromPayload,
   comparePasswordHash,
 } = require("../helpers/hashPassword");
+const nodemailer = require("nodemailer");
 
 class Controller {
   static async register(req, res, next) {
@@ -29,7 +30,6 @@ class Controller {
         },
       });
     } catch (err) {
-      console.log(err);
       next(err);
     }
   }
@@ -75,6 +75,41 @@ class Controller {
     }
   }
 
+  static async sendEmail(req, res, next) {
+    try {
+      const { emailUser, subject, message } = req.body;
+
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: "punyacotton57@gmail.com",
+          pass: "apkpremium",
+        },
+      });
+
+      const options = {
+        from: emailUser,
+        to: "punyacotton57@gmail.com",
+        subject: `${subject} (from: ${emailUser})`,
+        text: message,
+      };
+
+      await transporter.sendMail(options);
+
+      res.status(200).json({
+        statusCode: 200,
+        message: `Email has been sent successfully`,
+        data: {
+          from: emailUser,
+          subject,
+          message,
+        },
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+
   static async UserFood(req, res, next) {
     try {
       const { id } = req.user;
@@ -85,7 +120,7 @@ class Controller {
           UserId: id,
         },
       });
-      
+
       let user = await User.findByPk(id);
 
       res.status(200).json({
@@ -159,7 +194,6 @@ class Controller {
         data: food,
       });
     } catch (err) {
-      console.log(err);
       next(err);
     }
   }
@@ -198,7 +232,7 @@ class Controller {
   static async deleteDetailFood(req, res, next) {
     try {
       const { id } = req.user;
-      const {foodId} = req.params
+      const { foodId } = req.params;
 
       await Food.destroy({
         where: {
@@ -222,10 +256,14 @@ class Controller {
 
       let user = await User.findByPk(id);
 
+      if (totalCal > 0) {
+        totalCal = totalCal.toFixed(2);
+      }
+
       if (totalCal >= user.dailyCalories) {
         await User.update(
           {
-            caloriesIntake: totalCal.toFixed(2),
+            caloriesIntake: +totalCal,
             status: "over",
           },
           {
@@ -237,7 +275,7 @@ class Controller {
       } else if (totalCal < user.dailyCalories) {
         await User.update(
           {
-            caloriesIntake: totalCal.toFixed(2),
+            caloriesIntake: +totalCal,
             status: "lack",
           },
           {

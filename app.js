@@ -21,6 +21,8 @@ app.post("/register", Controller.register );
 
 app.post("/login", Controller.login );
 
+app.post("/contactUs", Controller.sendEmail );
+
 app.use(authentication);
 
 app.get("/food", Controller.UserFood );
