@@ -85,9 +85,12 @@ class Controller {
           UserId: id,
         },
       });
+      
+      let user = await User.findByPk(id);
 
       res.status(200).json({
         statusCode: 200,
+        user,
         data: food,
       });
     } catch (err) {
@@ -127,7 +130,7 @@ class Controller {
       if (totalCal >= user.dailyCalories) {
         await User.update(
           {
-            caloriesIntake: totalCal.toFixed(3),
+            caloriesIntake: totalCal.toFixed(2),
             status: "over",
           },
           {
@@ -139,7 +142,7 @@ class Controller {
       } else if (totalCal < user.dailyCalories) {
         await User.update(
           {
-            caloriesIntake: totalCal.toFixed(3),
+            caloriesIntake: totalCal.toFixed(2),
             status: "lack",
           },
           {
@@ -186,6 +189,68 @@ class Controller {
       res.status(200).json({
         statusCode: 200,
         message: "Daily Food reset successfully",
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async deleteDetailFood(req, res, next) {
+    try {
+      const { id } = req.user;
+      const {foodId} = req.params
+
+      await Food.destroy({
+        where: {
+          id: foodId,
+        },
+      });
+
+      let cal = await Food.findAll({
+        where: {
+          UserId: id,
+        },
+      });
+
+      let temp = cal.map((el) => {
+        return +el.calories;
+      });
+
+      let totalCal = temp.reduce(function (a, b) {
+        return a + b;
+      }, 0);
+
+      let user = await User.findByPk(id);
+
+      if (totalCal >= user.dailyCalories) {
+        await User.update(
+          {
+            caloriesIntake: totalCal.toFixed(2),
+            status: "over",
+          },
+          {
+            where: {
+              id,
+            },
+          }
+        );
+      } else if (totalCal < user.dailyCalories) {
+        await User.update(
+          {
+            caloriesIntake: totalCal.toFixed(2),
+            status: "lack",
+          },
+          {
+            where: {
+              id,
+            },
+          }
+        );
+      }
+
+      res.status(200).json({
+        statusCode: 200,
+        message: "Food deleted successfully",
       });
     } catch (err) {
       next(err);
