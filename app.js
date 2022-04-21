@@ -25,7 +25,11 @@ app.post("/contactUs", Controller.sendEmail );
 
 app.use(authentication);
 
+app.get("/users", Controller.findUser );
+
 app.patch("/users", Controller.updateMembership );
+
+app.post("/payment", Controller.paymentGateway );
 
 app.get("/food", Controller.UserFood );
 
