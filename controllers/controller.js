@@ -348,16 +348,15 @@ class Controller {
 
   static async paymentGateway(req, res, next) {
     try {
-      console.log('masuk2');
-      const { id, email } = req.user;
+      const { email } = req.user;
       let parameter = {
         transaction_details: {
-          order_id: "DiETIV" + Math.floor(Math.random() * 1000000 ),
+          order_id: "DiETIV" + Math.floor(Math.random() * 10000000 ),
           gross_amount: 10000,
         },
         customer_details: {
           email: email,
-          phone: "+6281283071034",
+          phone: "+6281273081665",
         },
         enabled_payments: [
           "credit_card",
@@ -400,13 +399,12 @@ class Controller {
       let transactionToken = transaction.token;
 
       let transactionRedirectUrl = transaction.redirect_url;
-      console.log('masuk3');
+
       res.status(200).json({
         token: transactionToken,
         redirect_url: transactionRedirectUrl,
       });
     } catch (err) {
-      console.log(err);
       next(err);
     }
   }
