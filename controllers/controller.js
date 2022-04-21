@@ -4,6 +4,12 @@ const {
   comparePasswordHash,
 } = require("../helpers/hashPassword");
 const nodemailer = require("nodemailer");
+const midtransClient = require("midtrans-client");
+let snap = new midtransClient.Snap({
+  isProduction: false,
+  serverKey: process.env.SERVER_KEY,
+  clientKey: process.env.CLIENT_KEY,
+});
 
 class Controller {
   static async register(req, res, next) {
@@ -83,7 +89,7 @@ class Controller {
         service: "gmail",
         auth: {
           user: "punyacotton57@gmail.com",
-          pass: "apkpremium",
+          pass: process.env.GMAIL_PASS,
         },
       });
 
@@ -133,6 +139,21 @@ class Controller {
     }
   }
 
+  static async findUser(req, res, next) {
+    try {
+      const { id } = req.user;
+
+      let user = await User.findByPk(id);
+
+      res.status(200).json({
+        statusCode: 200,
+        user,
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+
   static async updateMembership(req, res, next) {
     try {
       const { id } = req.user;
@@ -141,7 +162,7 @@ class Controller {
         { membership: "premium" },
         {
           where: {
-            UserId: id,
+            id,
           },
         }
       );
@@ -321,6 +342,71 @@ class Controller {
         message: "Food deleted successfully",
       });
     } catch (err) {
+      next(err);
+    }
+  }
+
+  static async paymentGateway(req, res, next) {
+    try {
+      console.log('masuk2');
+      const { id, email } = req.user;
+      let parameter = {
+        transaction_details: {
+          order_id: "DiETIV" + Math.floor(Math.random() * 1000000 ),
+          gross_amount: 10000,
+        },
+        customer_details: {
+          email: email,
+          phone: "+6281283071034",
+        },
+        enabled_payments: [
+          "credit_card",
+          "cimb_clicks",
+          "bca_klikbca",
+          "bca_klikpay",
+          "bri_epay",
+          "echannel",
+          "permata_va",
+          "bca_va",
+          "bni_va",
+          "bri_va",
+          "other_va",
+          "gopay",
+          "indomaret",
+          "danamon_online",
+          "akulaku",
+          "shopeepay",
+        ],
+        credit_card: {
+          secure: true,
+          channel: "migs",
+          bank: "bca",
+          installment: {
+            required: false,
+            terms: {
+              bni: [3, 6, 12],
+              mandiri: [3, 6, 12],
+              cimb: [3],
+              bca: [3, 6, 12],
+              offline: [6, 12],
+            },
+          },
+          whitelist_bins: ["48111111", "41111111"],
+        },
+      };
+ 
+      const transaction = await snap.createTransaction(parameter);
+
+      let transactionToken = transaction.token;
+
+      let transactionRedirectUrl = transaction.redirect_url;
+      console.log('masuk3');
+      res.status(200).json({
+        token: transactionToken,
+        redirect_url: transactionRedirectUrl,
+      });
+    } catch (err) {
+      console.log(err);
       next(err);
     }
   }
