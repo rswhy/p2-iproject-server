@@ -1,5 +1,7 @@
 
-require("dotenv").config();
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config();
+}
 
 const express = require("express");
 const cors = require("cors");
@@ -7,7 +9,7 @@ const { authentication } = require("./middlewares/authentication");
 const { errorHandler } = require("./middlewares/error-handlers");
 const app = express();
 
-const port = 3000;
+const port = rocess.env.PORT || 3000;
 
 const Controller = require('./controllers/controller')
 
