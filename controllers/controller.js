@@ -89,7 +89,7 @@ class Controller {
         service: "gmail",
         auth: {
           user: "punyacotton57@gmail.com",
-          pass: process.env.GMAIL_PASS,
+          pass: "apkpremium",
         },
       });
 
