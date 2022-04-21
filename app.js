@@ -9,7 +9,7 @@ const { authentication } = require("./middlewares/authentication");
 const { errorHandler } = require("./middlewares/error-handlers");
 const app = express();
 
-const port = rocess.env.PORT || 3000;
+const port = process.env.PORT || 3000;
 
 const Controller = require('./controllers/controller')
 
