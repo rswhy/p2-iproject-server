@@ -100,7 +100,11 @@ class Controller {
         text: message,
       };
 
-      await transporter.sendMail(options);
+      await transporter.sendMail(options, (err, info) => {
+       if (err) {
+         console.log(err);
+       }
+      });
 
       res.status(200).json({
         statusCode: 200,
